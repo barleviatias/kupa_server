@@ -30,7 +30,7 @@ COLLECTION_NAME = 'kupa'
 #     # Collection check logic...
 @app.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+    response.headers['Access-Control-Allow-Origin'] = 'https://barleviatias.github.io'
     return response
 
 def search_string_in_episodes(search_string, db_name, collection_name, batch_size=100, max_matches=10):
