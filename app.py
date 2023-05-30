@@ -31,7 +31,13 @@ COLLECTION_NAME = 'kupa'
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'https://barleviatias.github.io'
+    # response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
     return response
+
+
+
+
+CONTEXT_LEN = 50
 
 def search_string_in_episodes(search_string, db_name, collection_name, batch_size=100, max_matches=10):
     print(search_string)
@@ -47,17 +53,22 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
     episode_names = set()  # Track episode names to remove duplicates
     for doc in cursor:
         local_matches = re.finditer(pattern, doc["script"])
-        spans = [match.span() for match in local_matches]
-        for start, end in spans:
+        for match in local_matches:
+            start, end = match.span()
             episode_name = doc["episode_name"]
             if episode_name not in episode_names:  # Check for duplicate episode names
                 episode_names.add(episode_name)
+                context_start = start
+                while context_start > 0 and doc["script"][context_start - 1] != '\n':
+                    context_start -= 1
+                context_end = min(end + CONTEXT_LEN, len(doc["script"]))
+                context = doc["script"][context_start:context_end].strip()
                 matches.append({
                     "episode_name": episode_name,
                     "episode_number": doc["episode_number"],
                     "season_number": doc["season_number"],
                     "url": doc["youtube_url"],
-                    "context": doc["script"][max(start - CONTEXT_LEN, 0):min(end + CONTEXT_LEN, len(doc["script"]))],
+                    "context": context,
                 })
                 if len(matches) >= max_matches:
                     break
@@ -67,8 +78,6 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
     client.close()
     print(matches)
     return matches
-
-
 
 @app.route('/search', methods=['GET'])
 def search_episodes():
