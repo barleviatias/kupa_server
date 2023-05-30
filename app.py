@@ -28,7 +28,7 @@ COLLECTION_NAME = 'kupa'
 #
 # def collection_exists(db_name, collection_name):
 #     # Collection check logic...
-
+@app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
     return response
