@@ -14,8 +14,8 @@ BATCH_SIZE = 300
 
 # mongo vars
 MONGO_URI = "mongodb+srv://barlevi_atias:Bb8159075@atlascluster.8h1liyd.mongodb.net/?retryWrites=true&w=majority"
-DB_NAME = 'kupa_db_idan_test'
-COLLECTION_NAME = 'episodes'
+DB_NAME = 'test'
+COLLECTION_NAME = 'kupa'
 
 
 # def parse_file(filename):
@@ -49,6 +49,7 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
                 "episode_name": doc["episode_name"],
                 "episode_number": doc["episode_number"],
                 "season_number": doc["season_number"],
+                "url": doc["youtube_url"],
                 "context": doc["script"][max(start - CONTEXT_LEN, 0):min(end + CONTEXT_LEN, len(doc["script"]))],
             })
             if len(matches) >= max_matches:
