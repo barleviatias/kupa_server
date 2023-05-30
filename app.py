@@ -96,7 +96,14 @@ def search_episodes():
     return jsonify(results)
 @app.route('/counter', methods=['GET'])
 def get_call_counter():
-    return jsonify({'counter': call_counter})
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tlsCAFile=certifi.where())
+    db = client[DB_NAME]
+    collection = db["log"]
+    # Get the count of documents in the collection
+    document_count = collection.count_documents({})
+
+
+    return jsonify({'counter': document_count})
 
 
 if __name__ == '__main__':
