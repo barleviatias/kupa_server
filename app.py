@@ -4,9 +4,10 @@ from flask import Flask, request, jsonify
 import certifi as certifi
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from flask_cors import CORS
 # Create Flask app
 app = Flask(__name__)
-
+cors = CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5500", "https://barleviatias.github.io/"]}}, allow_headers=["Content-Type", "X-Search-IP"])
 # global variables
 SCRIPT_FILE_PATH = "kupa_rashit_script.txt"
 CONTEXT_LEN = 20
@@ -22,11 +23,11 @@ COLLECTION_NAME = 'kupa'
 call_counter = 0
 
 
-@app.after_request
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'https://barleviatias.github.io'
-    # response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
-    return response
+# @app.after_request
+# def add_cors_headers(response):
+#     # response.headers['Access-Control-Allow-Origin'] = 'https://barleviatias.github.io'
+#     response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+#     return response
 
 
 
@@ -77,7 +78,7 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
 @app.route('/search', methods=['GET'])
 def search_episodes():
     search_string = request.args.get('q')
-    ip_address = request.remote_addr
+    ip_address = request.headers.get('X-Search-IP')
     user_agent = request.user_agent.string
     # request_url = request.url
     # request_method = request.method
