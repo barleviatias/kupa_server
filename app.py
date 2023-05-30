@@ -17,6 +17,8 @@ MONGO_URI = "mongodb+srv://barlevi_atias:Bb8159075@atlascluster.8h1liyd.mongodb.
 DB_NAME = 'test'
 COLLECTION_NAME = 'kupa'
 
+# Counter variable
+call_counter = 0
 
 # def parse_file(filename):
 #     # Parsing logic...
@@ -41,6 +43,8 @@ CONTEXT_LEN = 50
 
 def search_string_in_episodes(search_string, db_name, collection_name, batch_size=100, max_matches=10):
     print(search_string)
+    global call_counter
+    call_counter += 1
     client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tlsCAFile=certifi.where())
 
     db = client[db_name]
@@ -76,7 +80,7 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
             break
 
     client.close()
-    print(matches)
+    print(len(matches))
     return matches
 
 @app.route('/search', methods=['GET'])
@@ -90,6 +94,9 @@ def search_episodes():
                                         max_matches=MAX_MATCHES)
 
     return jsonify(results)
+@app.route('/counter', methods=['GET'])
+def get_call_counter():
+    return jsonify({'counter': call_counter})
 
 
 if __name__ == '__main__':
