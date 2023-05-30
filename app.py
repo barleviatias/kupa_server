@@ -7,7 +7,7 @@ from pymongo.server_api import ServerApi
 from flask_cors import CORS
 # Create Flask app
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5500", "https://barleviatias.github.io/"]}}, allow_headers=["Content-Type", "X-Search-IP"])
+cors = CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5500", "https://barleviatias.github.io"]}}, allow_headers=["Content-Type", "X-Search-IP"])
 # global variables
 SCRIPT_FILE_PATH = "kupa_rashit_script.txt"
 CONTEXT_LEN = 20
