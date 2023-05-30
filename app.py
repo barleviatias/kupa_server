@@ -20,22 +20,12 @@ COLLECTION_NAME = 'kupa'
 # Counter variable
 call_counter = 0
 
-# def parse_file(filename):
-#     # Parsing logic...
-#
-#
-# def save_to_mongo(data, db_name, collection_name):
-#     # Saving to MongoDB logic...
-#
-#
-# def collection_exists(db_name, collection_name):
-#     # Collection check logic...
+
 @app.after_request
 def add_cors_headers(response):
     response.headers['Access-Control-Allow-Origin'] = 'https://barleviatias.github.io'
     # response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
     return response
-
 
 
 
@@ -79,13 +69,23 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
         if len(matches) >= max_matches:
             break
 
-    client.close()
+    # client.close()
     print(len(matches))
     return matches
 
 @app.route('/search', methods=['GET'])
 def search_episodes():
     search_string = request.args.get('q')
+    ip_address = request.remote_addr
+    search_data = {
+        "search_term": search_string,
+        "ip_address": ip_address
+    }
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tlsCAFile=certifi.where())
+    db = client[DB_NAME]
+    collection = db["log"]
+    collection.insert_one(search_data)
+    client.close()
 
     if not search_string:
         return jsonify({'error': 'No search query provided.'}), 400
