@@ -29,6 +29,9 @@ COLLECTION_NAME = 'kupa'
 # def collection_exists(db_name, collection_name):
 #     # Collection check logic...
 
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+    return response
 
 def search_string_in_episodes(search_string, db_name, collection_name, batch_size=100, max_matches=10):
     print(search_string)
