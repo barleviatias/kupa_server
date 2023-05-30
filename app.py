@@ -1,3 +1,4 @@
+import datetime
 import re
 from flask import Flask, request, jsonify
 import certifi as certifi
@@ -77,22 +78,28 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
 def search_episodes():
     search_string = request.args.get('q')
     ip_address = request.remote_addr
-    search_data = {
-        "search_term": search_string,
-        "ip_address": ip_address
-    }
-    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tlsCAFile=certifi.where())
-    db = client[DB_NAME]
-    collection = db["log"]
-    collection.insert_one(search_data)
-    client.close()
+    user_agent = request.user_agent.string
+    # request_url = request.url
+    # request_method = request.method
+    timestamp = datetime.now()
 
     if not search_string:
         return jsonify({'error': 'No search query provided.'}), 400
 
     results = search_string_in_episodes(search_string, DB_NAME, COLLECTION_NAME, batch_size=BATCH_SIZE,
                                         max_matches=MAX_MATCHES)
-
+    search_data = {
+        "search_term": search_string,
+        "ip_address": ip_address,
+        "user_agent": user_agent,
+        "timestamp": timestamp,
+        "num_of_results":len(results)
+    }
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), tlsCAFile=certifi.where())
+    db = client[DB_NAME]
+    collection = db["log"]
+    collection.insert_one(search_data)
+    client.close()
     return jsonify(results)
 @app.route('/counter', methods=['GET'])
 def get_call_counter():
