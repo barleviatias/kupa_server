@@ -44,25 +44,30 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
     pattern = search_string.split(" ")
     pattern = ",?\\s?".join(pattern) + ",?\\s?"
     matches = []
+    episode_names = set()  # Track episode names to remove duplicates
     for doc in cursor:
         local_matches = re.finditer(pattern, doc["script"])
         spans = [match.span() for match in local_matches]
         for start, end in spans:
-            matches.append({
-                "episode_name": doc["episode_name"],
-                "episode_number": doc["episode_number"],
-                "season_number": doc["season_number"],
-                "url": doc["youtube_url"],
-                "context": doc["script"][max(start - CONTEXT_LEN, 0):min(end + CONTEXT_LEN, len(doc["script"]))],
-            })
-            if len(matches) >= max_matches:
-                break
+            episode_name = doc["episode_name"]
+            if episode_name not in episode_names:  # Check for duplicate episode names
+                episode_names.add(episode_name)
+                matches.append({
+                    "episode_name": episode_name,
+                    "episode_number": doc["episode_number"],
+                    "season_number": doc["season_number"],
+                    "url": doc["youtube_url"],
+                    "context": doc["script"][max(start - CONTEXT_LEN, 0):min(end + CONTEXT_LEN, len(doc["script"]))],
+                })
+                if len(matches) >= max_matches:
+                    break
         if len(matches) >= max_matches:
             break
 
     client.close()
     print(matches)
     return matches
+
 
 
 @app.route('/search', methods=['GET'])
