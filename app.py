@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import re
 from flask import Flask, request, jsonify
@@ -15,7 +16,7 @@ MAX_MATCHES = 30
 BATCH_SIZE = 300
 
 # mongo vars
-MONGO_URI = "mongodb+srv://barlevi_atias:Bb8159075@atlascluster.8h1liyd.mongodb.net/?retryWrites=true&w=majority"
+MONGO_URI = os.environ.get('mongoKEY')
 DB_NAME = 'test'
 COLLECTION_NAME = 'kupa'
 
