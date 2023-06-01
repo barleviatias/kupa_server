@@ -78,7 +78,7 @@ def search_string_in_episodes(search_string, db_name, collection_name, batch_siz
 @app.route('/search', methods=['GET'])
 def search_episodes():
     search_string = request.args.get('q')
-    ip_address = request.headers.get('X-Search-IP')
+    # ip_address = request.headers.get('X-Search-IP')
     user_agent = request.user_agent.string
     # request_url = request.url
     # request_method = request.method
@@ -91,7 +91,7 @@ def search_episodes():
                                         max_matches=MAX_MATCHES)
     search_data = {
         "search_term": search_string,
-        "ip_address": ip_address,
+        # "ip_address": ip_address,
         "user_agent": user_agent,
         "timestamp": timestamp,
         "num_of_results":len(results)
